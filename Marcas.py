@@ -1,14 +1,39 @@
 from datetime import datetime
 import streamlit as st
 import pandas as pd
+import matplotlib.pyplot as plt
+
+#calcula en nivel de ingreso dado el ingreso anual
+def ingreso_anual(data):
+    if (data > 1000000):
+        return "Muy Alto"
+    elif (data > 750000):
+        return "Alto"
+    elif (data > 500000):
+        return "Medio-Alto"
+    elif (data > 250000):
+        return "Medio"
+    elif (data > 100000):
+        return "Medio-Bajo"
+    return "Bajo"
+
+# Función para crear un gráfico de pastel
+def pie_chart(data, group_by):
+    fig, ax = plt.subplots()
+    grouped_data = data.groupby(group_by).size()
+    ax.pie(grouped_data, labels=grouped_data.index, autopct='%1.1f%%', startangle=90)
+    ax.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+    return fig
 
 st.title('Company Cars')
+
 
 def load_data():
     data = pd.read_csv('C:\\Users\\mfdourado.INDRA\\Documents\\PBI\\COCHES\\Car Sales.xlsx - car_data.csv')
     data['Date'] = pd.to_datetime(data['Date'])
     data['Year'] = data['Date'].dt.year
     data['Month'] = data['Date'].dt.month
+    data["Ingreso Anual"] = data["Annual Income"].apply(lambda x: ingreso_anual(x))
     return data
 
 data = load_data()
@@ -67,3 +92,23 @@ with row[1]:
 # Revenue por coche
 with row[2]:
     st.metric(label="Revenue por Coche", value=f"${revenueCoche_current:.2f}", delta=f"{revenue_por_coche_porcentaje:.2f}%")
+
+
+
+# Crear y mostrar los Pie Chart
+st.header(f"Pie Chart by {'Ingreso Anual'}")
+fig = pie_chart(filtered_data, 'Ingreso Anual')
+st.pyplot(fig)
+
+st.header(f"Pie Chart by {'Engine'}")
+fig = pie_chart(filtered_data, 'Engine')
+st.pyplot(fig)
+
+st.header(f"Pie Chart by {'Dealer_Region'}")
+fig = pie_chart(filtered_data, 'Dealer_Region')
+st.pyplot(fig)
+
+st.header(f"Pie Chart by {'Color'}")
+fig = pie_chart(filtered_data, 'Color')
+st.pyplot(fig)
+
