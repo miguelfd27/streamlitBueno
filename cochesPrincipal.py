@@ -5,7 +5,7 @@ import pandas as pd
 st.title('Sales Cars')
 
 def load_data():
-    data = pd.read_csv('C:\\Users\\mfdourado.INDRA\\Documents\\PBI\\COCHES\\Car Sales.xlsx - car_data.csv')
+    data = pd.read_csv('resources\\car_data.csv')
     data['Date'] = pd.to_datetime(data['Date'])
     return data
 
