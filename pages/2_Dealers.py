@@ -4,9 +4,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 import altair as alt
 import datetime
+import pathlib
 import plotly.express as px
 import paquetes.modulo as md
 from typing import List, Tuple
+import email, smtplib, ssl
+from email import encoders
+from email.mime.base import MIMEBase
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 def number_to_month(numero_mes):
     d=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto',
@@ -67,11 +73,14 @@ def str_to_MY(cadena : str):
        'Septiembre','Octubre','Noviembre','Diciembre']
     mes = int(cadena[-2:])
     return meses[mes - 1] + " " + cadena[:4]
+def work_directory():
+    return str(pathlib.Path(__file__).parent.absolute().parent.absolute())
 
 @st.cache_data
 #cargamos datos del csv
 def load_data():
-    data = pd.read_csv("c:\\users\\mrboo.indra\\miproyecto\\resources\\car_data.csv")
+    dir = work_directory()
+    data = pd.read_csv(dir + "\\resources\\car_data.csv")
     data['Date'] = pd.to_datetime(data['Date'])
     data['Year'] = data['Date'].dt.year
     data['Month'] = data['Date'].dt.month
@@ -199,6 +208,31 @@ data_dealer = data[data['Dealer_Name'] == dealer]
 lista = list(data_dealer['M/Y'].unique())
 lista = list(map(str_to_MY, lista))
 
+#inicializamos el correo
+st.session_state['placeholder'] = "formato: correo@dominio"
+
+#botón para poder obtener el fichero csv
+flag = st.button("Obtener datos en formato CSV vía correo electrónico", type="primary")
+archivo_csv = "C:\\Users\\mrboo.INDRA\\dealers.csv"
+
+nombre_del_archivo = "dealers.csv"
+
+if flag:
+    data_dealer.to_csv(archivo_csv, index=False)
+    correo = st.text_input(
+                           'Escriba el correo electrónico al que desea enviar los datos',
+                           "formato: correo@dominio",
+                            key="placeholder",
+                           )
+    
+correo = st.session_state.placeholder    
+if correo != "formato: correo@dominio":
+        md.send_email(archivo_csv, nombre_del_archivo,correo)
+
+
+#reiniciamos el placeholder
+st.session_state['placeholder'] = "formato: correo@dominio"
+  
 #slider meses
 start, end = st.select_slider("Selecciona el rango de meses", options = lista, value=('Enero 2022','Diciembre 2023'))
 

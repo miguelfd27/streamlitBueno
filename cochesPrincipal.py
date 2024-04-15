@@ -79,12 +79,6 @@ st.metric(label="Revenue", value=f"${totalRevenue:,}", delta=f"{revenue_porcenta
 # Revenue por coche
 st.metric(label="Revenue por Coche", value=f"${FtotalRevenue}", delta=f"{revenue_por_coche_porcentaje:.2f}%")
 
-
-
-
-
-
-
 # company
 sales_summary = filtered_data.groupby('Company').agg(
     total_sales=('Price ($)', 'sum'),
