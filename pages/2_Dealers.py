@@ -208,30 +208,32 @@ data_dealer = data[data['Dealer_Name'] == dealer]
 lista = list(data_dealer['M/Y'].unique())
 lista = list(map(str_to_MY, lista))
 
-#inicializamos el correo
-st.session_state['placeholder'] = "formato: correo@dominio"
-
 #botón para poder obtener el fichero csv
 flag = st.button("Obtener datos en formato CSV vía correo electrónico", type="primary")
-archivo_csv = "C:\\Users\\mrboo.INDRA\\dealers.csv"
+
+archivo_csv = work_directory() + "\\resources\\dealers.csv"
+
+#inicializamos la variable placeholder
+if 'placeholder' not in st.session_state:
+    st.session_state.placeholder = 'formato: correo@dominio'
 
 nombre_del_archivo = "dealers.csv"
+correo = ""
 
 if flag:
     data_dealer.to_csv(archivo_csv, index=False)
     correo = st.text_input(
                            'Escriba el correo electrónico al que desea enviar los datos',
                            "formato: correo@dominio",
-                            key="placeholder",
-                           )
+                            key='placeholder',
+                        )
     
-correo = st.session_state.placeholder    
+correo = st.session_state.placeholder
 if correo != "formato: correo@dominio":
-        md.send_email(archivo_csv, nombre_del_archivo,correo)
-
+    md.send_email(archivo_csv, nombre_del_archivo,correo)
 
 #reiniciamos el placeholder
-st.session_state['placeholder'] = "formato: correo@dominio"
+#st.session_state['placeholder'] = "formato: correo@dominio"
   
 #slider meses
 start, end = st.select_slider("Selecciona el rango de meses", options = lista, value=('Enero 2022','Diciembre 2023'))
