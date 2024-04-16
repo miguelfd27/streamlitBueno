@@ -70,14 +70,19 @@ revenue_por_coche_porcentaje = ((revenueCOche / previous_revenueCOche) - 1) * 10
 # Mostrar métricas con porcentaje respecto al mes anterior
 st.header("KPI Metrics (vs Mes Anterior)")
 
+row = st.columns(3)
+
 # Autos vendidos
-st.metric(label="Autos Vendidos", value=totalAutomoviles, delta=f"{autos_porcentaje:.2f}%")
+with row[0]:
+    st.metric(label="Autos Vendidos", value=totalAutomoviles, delta=f"{autos_porcentaje:.2f}%")
 
 # Revenue
-st.metric(label="Revenue", value=f"${totalRevenue:,}", delta=f"{revenue_porcentaje:.2f}%")
+with row[1]:
+    st.metric(label="Revenue", value=f"${totalRevenue:,}", delta=f"{revenue_porcentaje:.2f}%")
 
 # Revenue por coche
-st.metric(label="Revenue por Coche", value=f"${FtotalRevenue}", delta=f"{revenue_por_coche_porcentaje:.2f}%")
+with row[2]:
+    st.metric(label="Revenue por Coche", value=f"${FtotalRevenue}", delta=f"{revenue_por_coche_porcentaje:.2f}%")
 
 # company
 sales_summary = filtered_data.groupby('Company').agg(
@@ -120,15 +125,22 @@ CompañiaMax = ventasCompany.idxmax()
 
 # Mostrar métricas
 st.header("Métricas de la Compañía con Más Ventas")
-st.metric(label="Compañía con más ventas :", value=CompañiaMax)
+row3 = st.columns(3)
+with row3[1]:
+    st.metric(label="Compañía con más ventas :", value=CompañiaMax)
 
 # Calcular y mostrar autos vendidos y revenue total de la compañía con más ventas
 ventas_max = company.get_group(CompañiaMax)
 totalAutosMax = ventas_max['Car_id'].count()
 totalRevenueMax = ventas_max['Price ($)'].sum()
 
-st.metric(label="Autos Vendidos (Compañía Máx.)", value=totalAutosMax)
-st.metric(label="Revenue Total (Compañía Máx.)", value=f"${totalRevenueMax:,.2f}")
+
+row2 = st.columns(3)
+
+with row2[0]:
+    st.metric(label="Autos Vendidos (Compañía Máx.)", value=totalAutosMax)
+with row2[2]:
+    st.metric(label="Revenue Total (Compañía Máx.)", value=f"${totalRevenueMax:,.2f}")
 
 
 
