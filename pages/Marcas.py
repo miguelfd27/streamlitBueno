@@ -50,13 +50,14 @@ def load_data():
     return data
 
 st.set_page_config(layout="wide")
-st.title('Company Cars')
+selected_Company = st.query_params['marca']
+st.title('Company Cars: ' + selected_Company)
 data = load_data()
 
 
 #filtros
 all_marcas = sorted(data['Company'].unique())
-selected_Company = st.selectbox('Select Year:', all_marcas)
+#selected_Company = st.selectbox('Select Year:', all_marcas)
 
 filtered_data = data[data['Company'] == selected_Company]
 

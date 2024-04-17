@@ -92,7 +92,20 @@ sales_summary = filtered_data.groupby('Company').agg(
 
 sales_summary['revenue_per_car'] = sales_summary['total_sales'] / sales_summary['total_cars_sold']
 
-st.write("Summary by Company:", sales_summary)
+sales_summary['link'] = "http://localhost:8501/Marcas?marca=" + sales_summary['Company']
+#st.write("Summary by Company:", sales_summary)
+st.data_editor(
+    sales_summary,
+    column_config={
+        "link": st.column_config.LinkColumn(
+            "Enlace a detalles",
+            help="Enlace a la página de detalles de la marca",
+            #validate="^https://[a-z]+\.streamlit\.app$",
+            max_chars=100,
+        ),
+    },
+    hide_index=True,
+)
 
 #date
 aggregated_data = filtered_data.groupby('Date').agg(
@@ -141,8 +154,4 @@ with row2[0]:
     st.metric(label="Autos Vendidos (Compañía Máx.)", value=totalAutosMax)
 with row2[2]:
     st.metric(label="Revenue Total (Compañía Máx.)", value=f"${totalRevenueMax:,.2f}")
-
-
-
-
 

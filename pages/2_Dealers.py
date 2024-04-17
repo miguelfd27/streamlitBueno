@@ -313,3 +313,6 @@ for col in row:
     else:
         tile.plotly_chart(lista[i])
     i+=1
+
+s = st.selectbox("Compañias", top_5_autos.index)
+st.link_button("Ir a detalles de "+s, "http://localhost:8501/Marcas?marca="+s)
