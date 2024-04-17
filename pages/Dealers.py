@@ -164,7 +164,7 @@ def cortar_lista(start_value, end_value, lista):
     return nueva_lista
 #establece la página a ventana completa
 st.set_page_config(layout="wide")
-
+md.menu()
 st.title('Dealers')
 data = load_data()
 columnas = data.columns.values
@@ -313,6 +313,8 @@ for col in row:
     else:
         tile.plotly_chart(lista[i])
     i+=1
-
-s = st.selectbox("Compañias", top_5_autos.index)
-st.link_button("Ir a detalles de "+s, "http://localhost:8501/Marcas?marca="+s)
+row3 = st.columns(2)
+t1 = row3[0].container(height=300, border= False)
+s = t1.selectbox("Compañias",options = top_5_autos.index)
+t2 = row3[1].container(height=350, border= False)
+t2.link_button("Ir a detalles de "+s , "http://localhost:8501/Marcas?marca="+s, use_container_width=True)

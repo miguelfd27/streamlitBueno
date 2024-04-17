@@ -1,7 +1,8 @@
 from datetime import datetime
 import streamlit as st
 import pandas as pd
-
+import time
+import paquetes.modulo as md
 st.title('Sales Cars')
 
 def load_data():
@@ -9,6 +10,7 @@ def load_data():
     data['Date'] = pd.to_datetime(data['Date'])
     return data
 
+md.menu()
 data = load_data()
 
 data['year'] = data['Date'].dt.year

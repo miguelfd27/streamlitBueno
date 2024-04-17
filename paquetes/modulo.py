@@ -3,6 +3,7 @@ import pandas as pd
 import smtplib
 import pathlib
 import mimetypes
+import streamlit as st
 from email.mime.multipart import MIMEMultipart
 from email import encoders
 from email.message import Message
@@ -30,9 +31,10 @@ def pie_chart_figura(data, agrupacion, agrupar,colores, tam, leyenda,funcion):
     )
     return fig
 
-def comprobar_email(email):
-
-    return True
+def menu():
+    #Muestra el nuevo menú
+    st.sidebar.page_link("cochesPrincipal.py", label="Pagina principal")
+    st.sidebar.page_link("pages/Dealers.py", label="Dealers")
 
 def send_email(ruta_del_archivo, nombre_del_fichero, destinatario):
     direccion_origen = "streamlit11@gmail.com"
