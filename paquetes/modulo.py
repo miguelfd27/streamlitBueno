@@ -33,7 +33,8 @@ def pie_chart_figura(data, agrupacion, agrupar,colores, tam, leyenda,funcion):
 
 def menu():
     #Muestra el nuevo menú
-    st.sidebar.page_link("cochesPrincipal.py", label="Pagina principal")
+    st.sidebar.page_link("aplicacion.py", label="Inicio")
+    st.sidebar.page_link("pages/cochesPrincipal.py", label="Datos generales")
     st.sidebar.page_link("pages/Dealers.py", label="Dealers")
 
 def send_email(ruta_del_archivo, nombre_del_fichero, destinatario):
