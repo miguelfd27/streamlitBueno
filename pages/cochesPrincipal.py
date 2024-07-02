@@ -12,21 +12,14 @@ def load_data():
     data['Date'] = pd.to_datetime(data['Date'])
     return data
 
-with open('.streamlit/config.yaml') as file:
-    config = yaml.load(file, Loader=SafeLoader)
-
-authenticator = stauth.Authenticate(
-    config['credentials'],
-    config['cookie']['name'],
-    config['cookie']['key'],
-    config['cookie']['expiry_days'],
-    config['pre-authorized']
-)
+authenticator = md.obtener_auth()
 
 if st.session_state["authentication_status"]:
-    authenticator.logout(location="sidebar")
     st.title('Sales Cars')
+
     md.menu()
+    md.logout(authenticator)
+    
     data = load_data()
 
     data['year'] = data['Date'].dt.year
@@ -119,6 +112,7 @@ if st.session_state["authentication_status"]:
                 "Enlace a detalles",
                 help="Enlace a la página de detalles de la marca",
                 #validate="^https://[a-z]+\.streamlit\.app$",
+                display_text = "Enlace a detalle",
                 max_chars=100,
             ),
         },
@@ -173,12 +167,7 @@ if st.session_state["authentication_status"]:
     with row2[2]:
         st.metric(label="Revenue Total (Compañía Máx.)", value=f"${totalRevenueMax:,.2f}")
 
-elif st.session_state["authentication_status"] is False:
-    authenticator.login()
-    st.error('Username/password is incorrect')
-elif st.session_state["authentication_status"] is None:
-    authenticator.login()
-    st.warning('Please enter your username and password')
+md.error_session_message(authenticator)
 
 
 

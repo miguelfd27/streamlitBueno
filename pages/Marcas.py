@@ -50,82 +50,89 @@ def load_data():
     return data
 
 st.set_page_config(layout="wide")
-selected_Company = st.query_params['marca']
-st.title('Company Cars: ' + selected_Company)
-data = load_data()
+
+authenticator = md.obtener_auth()
+
+if st.session_state["authentication_status"]:
+
+    selected_Company = st.query_params['marca']
+    st.title('Company Cars: ' + selected_Company)
+    data = load_data()
 
 
-#filtros
-all_marcas = sorted(data['Company'].unique())
-#selected_Company = st.selectbox('Select Year:', all_marcas)
+    #filtros
+    all_marcas = sorted(data['Company'].unique())
+    #selected_Company = st.selectbox('Select Year:', all_marcas)
 
-filtered_data = data[data['Company'] == selected_Company]
-
-
-
-# Mes Actual
-current_month = datetime.now().month 
-current_year = datetime.now().year - 1
-
-current_month_data = data[(data['Month'] == current_month) & (data['Year'] == current_year) & (data['Company'] == selected_Company)]
-
-totalAutomoviles_current = current_month_data['Car_id'].count()
-totalRevenue_current = current_month_data['Price ($)'].sum()
-revenueCoche_current = totalRevenue_current / totalAutomoviles_current
-
-# Mes Previous
-previous_month = current_month - 1
-previous_year = current_year
-if previous_month == 0:
-    previous_month = 12
-    previous_year -= 1
-
-previous_month_data = data[(data['Month'] == previous_month) & (data['Year'] == previous_year) & (data['Company'] == selected_Company)]
-
-totalAutomoviles_previous = previous_month_data['Car_id'].count()
-totalRevenue_previous = previous_month_data['Price ($)'].sum()
-revenueCoche_previous = totalRevenue_previous / totalAutomoviles_previous
+    filtered_data = data[data['Company'] == selected_Company]
 
 
-autos_porcentaje = ((totalAutomoviles_current / totalAutomoviles_previous) - 1) * 100
-revenue_porcentaje = ((totalRevenue_current / totalRevenue_previous) - 1) * 100
-revenue_por_coche_porcentaje = ((revenueCoche_current / revenueCoche_previous) - 1) * 100
 
-# Metrics
-st.header(f"KPI Metrics for {selected_Company} (vs Previous Month)")
+    # Mes Actual
+    current_month = datetime.now().month 
+    current_year = datetime.now().year - 1
 
-row = st.columns(3)
+    current_month_data = data[(data['Month'] == current_month) & (data['Year'] == current_year) & (data['Company'] == selected_Company)]
 
-# Autos vendidos
-with row[0]:
-    st.metric(label="Autos Vendidos", value=totalAutomoviles_current, delta=f"{autos_porcentaje:.2f}%")
+    totalAutomoviles_current = current_month_data['Car_id'].count()
+    totalRevenue_current = current_month_data['Price ($)'].sum()
+    revenueCoche_current = totalRevenue_current / totalAutomoviles_current
 
-# Revenue
-with row[1]:
-    st.metric(label="Revenue", value=f"${totalRevenue_current:,}", delta=f"{revenue_porcentaje:.2f}%")
+    # Mes Previous
+    previous_month = current_month - 1
+    previous_year = current_year
+    if previous_month == 0:
+        previous_month = 12
+        previous_year -= 1
 
-# Revenue por coche
-with row[2]:
-    st.metric(label="Revenue por Coche", value=f"${revenueCoche_current:.2f}", delta=f"{revenue_por_coche_porcentaje:.2f}%")
+    previous_month_data = data[(data['Month'] == previous_month) & (data['Year'] == previous_year) & (data['Company'] == selected_Company)]
 
-color = ["#000000","#E1C233","#1FC2C2","#A666B0","#573B92","#666666"]
-group_by = ['Ingreso Anual','Engine','Dealer_Region','Color']
-vendidos = 'Vendidos'
+    totalAutomoviles_previous = previous_month_data['Car_id'].count()
+    totalRevenue_previous = previous_month_data['Price ($)'].sum()
+    revenueCoche_previous = totalRevenue_previous / totalAutomoviles_previous
 
-row = st.columns(4)
-for col,i in zip(row,group_by):
-    tile = col.container(border=False)
-    fig = md.pie_chart_figura(filtered_data,i,vendidos,color,300,False,"size")
+
+    autos_porcentaje = ((totalAutomoviles_current / totalAutomoviles_previous) - 1) * 100
+    revenue_porcentaje = ((totalRevenue_current / totalRevenue_previous) - 1) * 100
+    revenue_por_coche_porcentaje = ((revenueCoche_current / revenueCoche_previous) - 1) * 100
+
+    # Metrics
+    st.header(f"KPI Metrics for {selected_Company} (vs Previous Month)")
+
+    row = st.columns(3)
+
+    # Autos vendidos
+    with row[0]:
+        st.metric(label="Autos Vendidos", value=totalAutomoviles_current, delta=f"{autos_porcentaje:.2f}%")
+
+    # Revenue
+    with row[1]:
+        st.metric(label="Revenue", value=f"${totalRevenue_current:,}", delta=f"{revenue_porcentaje:.2f}%")
+
+    # Revenue por coche
+    with row[2]:
+        st.metric(label="Revenue por Coche", value=f"${revenueCoche_current:.2f}", delta=f"{revenue_por_coche_porcentaje:.2f}%")
+
+    color = ["#000000","#E1C233","#1FC2C2","#A666B0","#573B92","#666666"]
+    group_by = ['Ingreso Anual','Engine','Dealer_Region','Color']
+    vendidos = 'Vendidos'
+
+    row = st.columns(4)
+    for col,i in zip(row,group_by):
+        tile = col.container(border=False)
+        fig = md.pie_chart_figura(filtered_data,i,vendidos,color,300,False,"size")
+        tile.plotly_chart(fig)
+
+
+    row = st.columns(2)
+
+    fig = bar_chart(filtered_data, 'Model')
+    tile = row[0].container(border=False)
+    tile.pyplot(fig)
+
+    #treemap
+    fig = treemap(filtered_data, 'Body Style')
+    tile = row[1].container(border=False)
     tile.plotly_chart(fig)
 
-
-row = st.columns(2)
-
-fig = bar_chart(filtered_data, 'Model')
-tile = row[0].container(border=False)
-tile.pyplot(fig)
-
-#treemap
-fig = treemap(filtered_data, 'Body Style')
-tile = row[1].container(border=False)
-tile.plotly_chart(fig)
+md.error_session_message(authenticator)

@@ -168,22 +168,8 @@ def cortar_lista(start_value, end_value, lista):
 #establece la página a ventana completa
 st.set_page_config(layout="wide")
 
-with open('.streamlit/config.yaml') as file:
-    config = yaml.load(file, Loader=SafeLoader)
-
-authenticator = stauth.Authenticate(
-    config['credentials'],
-    config['cookie']['name'],
-    config['cookie']['key'],
-    config['cookie']['expiry_days'],
-    config['pre-authorized']
-)
-nombre, estado, username = authenticator.login()
-
-if 'authentication_status' not in st.session_state:
-    st.session_state.authentication_status = estado
-if 'nombre' not in st.session_state:
-    st.session_state.nombre = nombre
+authenticator = md.obtener_auth()
+config = md.obtener_config()
 
 if st.session_state["authentication_status"]:    
     authenticator.logout(location="sidebar")
@@ -349,7 +335,4 @@ if st.session_state["authentication_status"]:
     t2 = row3[1].container(height=350, border= False)
     t2.link_button("Ir a detalles de "+s , "http://localhost:8501/Marcas?marca="+s, use_container_width=True)
 
-elif st.session_state["authentication_status"] is False:
-    st.error('Username/password is incorrect')
-elif st.session_state["authentication_status"] is None:
-    st.warning('Please enter your username and password')
+md.error_session_message(authenticator)
